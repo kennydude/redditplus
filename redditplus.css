@@ -1,0 +1,51 @@
+.redditplus-button{
+	border: 1px solid #CCC;
+	background: #DDD;
+	box-sizing: border-box;
+	padding: 4px;
+	width: 23px;
+	height: 23px;
+	margin: 2px 5px 2px 0;
+
+	cursor: pointer;
+}
+.redditplus-button.fl{
+    float: left;
+}
+.redditplus-image{
+	max-width: 100%;
+	height: auto;
+}
+.redditplus-lightbox{
+	z-index: 100;
+	background: #333;
+	position: fixed;
+	left: 0;right:0;top:0;bottom:0;
+	display: none;
+}
+.redditplus-lb-content{
+	z-index: 102;
+	position: fixed;
+	overflow: scroll;
+}
+.redditplus-backup{
+	padding: 15px;
+	text-align: center;
+	cursor: pointer;
+}
+
+/** responsive addons **/
+@media(max-width: 600px){
+    .side{
+        display: none;
+    }
+    div#header-bottom-right{
+        position: static;
+        display: block;
+    }
+}
+@media(max-width: 400px){
+    .thumbnail{
+        display: none;
+    }
+}

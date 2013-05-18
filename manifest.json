@@ -1,0 +1,22 @@
+{
+	"name" : "Reddit+",
+	"version" : "1.2",
+	"manifest_version" : 2,
+	"description" : "Reddit+",
+	"background": {
+		"persistent" : false,
+		"scripts" : ["bg.js"]
+	},
+	"permissions" : [
+		"*://*.reddit.com/*",
+		"*://*.imgur.com/*"
+	],
+	"content_scripts" : [
+		{
+				"matches" : [ "*://www.reddit.com/*" ],
+				"js" : ["zepto.min.js","redditplus.js", "magpopup.js"],
+				"css" : [ "redditplus.css", "magpopup.css" ],
+				"run_at" : "document_idle"
+		}
+	]
+}
