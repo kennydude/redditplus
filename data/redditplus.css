@@ -1,13 +1,5 @@
 .redditplus-button{
-	/*
-	border: 1px solid #CCC;
-	background: #DDD;
-	box-sizing: border-box;
-	padding: 4px;
-	width: 23px;
-	height: 23px;
-	margin: 2px 5px 2px 0;
-	*/
+	display: inline !important;
 	cursor: pointer;
 }
 .redditplus-button.fl{
