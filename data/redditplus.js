@@ -1,8 +1,4 @@
 // Reddit+
-function inject_script(script){
-    // in future, this part could be moved out if you wanted it on FireFox etc.
-    chrome.runtime.sendMessage({ "script" : script });
-}
 
 // Domain specific handlers
 var handlers = {
@@ -27,13 +23,19 @@ var handlers = {
 			return $("<div>").attr("id", id ).html("...");
 		} else{
 			link = link.replace("imgur.com", "i.imgur.com");
-			link = link + ".jpg";
+			link = remove_qs(link) + ".jpg";
 			return make_image_expando(link);
 		}
 	},
 	"qkme.me" : function(link){
 		link = link.replace("qkme.me", "i.qkme.me");
-		link = link + ".jpg";
+		link = remove_qs(link) + ".jpg";
+		return make_image_expando(link);
+	},
+	"quickmeme.com" : function(link){
+		var p = link.indexOf("/meme/") + "/meme/".length;
+		link = "http://i.qkme.me/" + link.substring( p, link.indexOf("/", p) );
+		link = remove_qs(link) + ".jpg";
 		return make_image_expando(link);
 	},
 	"play.google.com" : function(link){
@@ -60,6 +62,13 @@ var handlers = {
 var domains = Object.keys(handlers);
 var image_extensions = [ ".png", ".jpg", ".gif" ];
 
+function remove_qs(href){
+	if(href.indexOf("?") != -1){
+		return href.substr(0, href.indexOf("?"));
+	}
+	return href;
+}
+
 function make_image_expando(src){
 	var img = $("<img>").attr("src", src).attr("href", src).addClass("redditplus-image");
 	img.magnificPopup({type:'image'});
@@ -78,6 +87,13 @@ function getQueryVariable(href, variable) {
     console.log('Query variable %s not found', variable);
 }
 
+function make_expando_button(){
+	return $("<img>").addClass("redditplus-button").attr({
+		"title" : "Preview link",
+		"src" : get_file( "button.png" )
+	}).attr("data-stat", "+");
+}
+
 function expando_click(f, cls, ex){
 	if(cls == undefined){
 		cls = ".entry";
@@ -85,7 +101,7 @@ function expando_click(f, cls, ex){
 		ex = "";
 	}
 	return function(){
-		if($(this).html() == "r+"){
+		if($(this).attr("data-stat") == "+"){
 			var entry = $(this).closest( cls );
 			console.log(entry);
 
@@ -95,7 +111,7 @@ function expando_click(f, cls, ex){
 				exp.addClass(ex);
 			}
 			exp.appendTo( entry );
-			$(this).html("r-");
+			$(this).attr("src", get_file("button-close.png")).attr("data-stat", "-");
 
 			var ddx = $("<div>").addClass("redditplus-expando redditplus-backup").html("back up").appendTo(entry).click(function(){
 				window.scrollTo(0, $(this).closest( cls ).position().top);
@@ -104,9 +120,9 @@ function expando_click(f, cls, ex){
 				ddx.addClass(ex);
 			}
 		} else{
-			if(ex != ""){ p = "." + ex; }
+			if(ex != ""){ p = "." + ex; } else{ p = ""; }
 			$(".redditplus-expando" + p,  $(this).closest( cls )).remove();
-			$(this).html("r+")
+			$(this).attr("src", get_file("button.png")).attr("data-stat", "+")
 		}
 	};
 }
@@ -115,10 +131,11 @@ function expando_click(f, cls, ex){
 $(".link").each(function() {
 	var href = $("a.title", this).attr("href");
 
-	var expando = $("<div>").addClass("redditplus-button fl").html("r+").attr("title", "Preview link");
+	var expando = make_expando_button().addClass("fl");
 
 	var x = href.indexOf("//") + 2;
 	var domain = href.substring( x, href.indexOf("/", x) );
+	domain = domain.replace("www.", "");
 	var extension = href.substring( href.lastIndexOf(".") );
 
 	expando.data("href", href).data("domain", domain);
@@ -139,10 +156,11 @@ var i = 0;
 $(".commentarea .usertext-body a").each(function(){
 	var href = $(this).attr("href");
 
-	var expando = $("<span>").addClass("redditplus-button").html("r+").attr("title", "Preview link");
+	var expando = make_expando_button();
 
 	var x = href.indexOf("//") + 2;
 	var domain = href.substring( x, href.indexOf("/", x) );
+	domain = domain.replace("www.", "");
 	var extension = href.substring( href.lastIndexOf(".") );
 
 	expando.data("href", href).data("domain", domain);

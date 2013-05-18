@@ -14,9 +14,23 @@
 	"content_scripts" : [
 		{
 				"matches" : [ "*://www.reddit.com/*" ],
-				"js" : ["zepto.min.js","redditplus.js", "magpopup.js"],
-				"css" : [ "redditplus.css", "magpopup.css" ],
+				"js" : [
+					"chrome.js",
+					"data/zepto.min.js",
+					"data/redditplus.js",
+					"data/magpopup.js"
+				],
+				"css" : [ "data/redditplus.css", "data/magpopup.css" ],
 				"run_at" : "document_idle"
 		}
-	]
+	],
+	"web_accessible_resources": [
+		"data/button.png",
+		"data/button-close.png"
+	],
+	"icons": {
+		"16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    }
 }

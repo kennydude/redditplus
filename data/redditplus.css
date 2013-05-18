@@ -1,4 +1,5 @@
 .redditplus-button{
+	/*
 	border: 1px solid #CCC;
 	background: #DDD;
 	box-sizing: border-box;
@@ -6,7 +7,7 @@
 	width: 23px;
 	height: 23px;
 	margin: 2px 5px 2px 0;
-
+	*/
 	cursor: pointer;
 }
 .redditplus-button.fl{
