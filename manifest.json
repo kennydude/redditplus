@@ -18,6 +18,7 @@
 				"js" : [
 					"data/zepto.min.js",
 					"chrome.js",
+					"data/marked.js",
 					"data/redditplus.js",
 					"data/magpopup.js"
 				],

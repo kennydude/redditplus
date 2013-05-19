@@ -14,6 +14,7 @@
   display: none
 }
 .redditplus-abutton{
+	cursor: pointer;
 	background: blue;
 	color: #FFF !important;
 	padding: 10px;

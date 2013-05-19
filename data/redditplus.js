@@ -225,6 +225,18 @@ $(".usertext-body a").each(function(){
 	i++;
 });
 
+// Preview
+$(".usertext-edit").each(function(){
+	var self = this;
+
+	var preview = $("<div>").addClass("preview").appendTo(this);
+
+	$("<a>").addClass("redditplus-abutton").click(function(){
+		preview.html( "<h4>Preview</h4>" + marked( $("textarea", self).val() ) );
+		return false;
+	}).css("float", "right").text("Preview").prependTo($(".bottom-area", this));
+})
+
 // Do mobile stuff
 $("<meta>").attr({
 	"name" : "viewport",
