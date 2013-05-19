@@ -5,14 +5,13 @@ var handlers = {
 	"imgur.com" : function(link){
 		if(link.indexOf("imgur.com/a/") != -1 || link.indexOf("imgur.com/gallery") != -1){
 			var id = "re" + link.substring( link.lastIndexOf("/") + 1 );
-			$.get(link, function(response){
+			get_xhr(link, function(response){
 				$("#" + id).html("");
 				var x = 0, img = "";
 				while( (x = response.indexOf('<a class="zoom"', x)) != -1 ){
 					var y = response.indexOf('http://i.imgur.com', x);
 					var src = response.substring( y, response.indexOf('"', y) );
 
-					console.log(id);
 					img = make_image_expando( src );
 					img.appendTo( $("#" + id) );
 
@@ -20,7 +19,7 @@ var handlers = {
 					x += '<a class="zoom"'.length;
 				}
 			});
-			return $("<div>").attr("id", id ).html("...");
+			return $("<div>").attr("id", id ).html( get_loader() );
 		} else{
 			link = link.replace("imgur.com", "i.imgur.com");
 			link = remove_qs(link) + ".jpg";
@@ -39,10 +38,51 @@ var handlers = {
 		return make_image_expando(link);
 	},
 	"play.google.com" : function(link){
-		var ap = getQueryVariable(link, "id");
-		var content = '<div class="pb-app-box" data-theme="light" data-lang="en"><a href="http://playboard.me/app/'+ap+'">App</a></div>';
-		inject_script("http://playboard.me/widgets/pb-app-box/1/pb_load_app_box.js");
-		return $("<div>").html(content);
+		get_xhr(link, function(response){
+			var page = $("<div>").html(response.replace( /\<\/?script/g, "" ));
+			var template = '<table><tr><td style="padding-right: 7px;">'
+					+ $(".doc-banner-icon", page).html() 
+					+ '</td><td><strong>'
+					+ $(".doc-banner-title", page).text()
+					+ '</strong><br/>'
+					+ $("meta[name='Description']", page).attr("content")
+					+ '<br/><a class="redditplus-abutton" href="'+ link +'">'
+					+ $("dd[itemprop='offers']", page).text()
+					+ '</a>'
+					+'</td></tr></table><div class="screenshots"><div>Screenshots</div></div>';
+			var box = $("#" + mush_link(link)).html(template);
+			make_expando_button().click(function(){
+				$("img.doc-screenshot-img", $(this).parent().parent()).toggleClass("hide");
+				if($("img.doc-screenshot-img", $(this).parent().parent()).hasClass("hide")){
+					$(this).attr("src", get_file("button.png"));
+				} else{
+					$(this).attr("src", get_file("button-close.png"));
+				}
+			}).appendTo( $(".screenshots div", box) );
+			$(".doc-overview-screenshots img.doc-screenshot-img", page).addClass("hide").appendTo( $(".screenshots", box) );
+			var gallery = [], ix = 0;
+			$("img.doc-screenshot-img").each(function(){
+				$(this).data("ix", ix); ix += 1;
+				gallery.push({
+					"src" : $(this).attr("src").substr( 0, $(this).attr("src").lastIndexOf("=") )
+				});
+			}).each(function(){
+				var self = this;
+				$(this).magnificPopup({
+					"type" : "image",
+					gallery: {
+						enabled: true
+					},
+					"items" : gallery,
+					"callbacks" : {
+						"open" : function(){
+							$.magnificPopup.instance.goTo( $(self).data("ix") );
+						}
+					}
+				});
+			}).css("cursor","zoom-in");
+		});
+		return $("<div>").attr("id", mush_link(link)).html( get_loader() );
 	},
     "vimeo.com" : function(link){
         var videoid = link.substring( link.lastIndexOf("/") + 1 );
@@ -62,11 +102,20 @@ var handlers = {
 var domains = Object.keys(handlers);
 var image_extensions = [ ".png", ".jpg", ".gif" ];
 
+function mush_link(link){
+	// thnx http://stackoverflow.com/questions/6147433/regex-replace-anything-but-numbers-and-lowercase
+	return link.replace(/[^0-9a-z-]/g,"");
+}
+
 function remove_qs(href){
 	if(href.indexOf("?") != -1){
 		return href.substr(0, href.indexOf("?"));
 	}
 	return href;
+}
+
+function get_loader(){
+	return '<img src="' + get_file("loading.gif") + '" />';
 }
 
 function make_image_expando(src){
@@ -103,7 +152,6 @@ function expando_click(f, cls, ex){
 	return function(){
 		if($(this).attr("data-stat") == "+"){
 			var entry = $(this).closest( cls );
-			console.log(entry);
 
 			var exp = f(this);
 			exp.addClass("redditplus-expando");
@@ -153,7 +201,7 @@ $(".link").each(function() {
 
 // Each link inside of a comment
 var i = 0;
-$(".commentarea .usertext-body a").each(function(){
+$(".usertext-body a").each(function(){
 	var href = $(this).attr("href");
 
 	var expando = make_expando_button();
@@ -161,7 +209,7 @@ $(".commentarea .usertext-body a").each(function(){
 	var x = href.indexOf("//") + 2;
 	var domain = href.substring( x, href.indexOf("/", x) );
 	domain = domain.replace("www.", "");
-	var extension = href.substring( href.lastIndexOf(".") );
+	var extension = remove_qs( href.substring( href.lastIndexOf(".") ) );
 
 	expando.data("href", href).data("domain", domain);
 
@@ -182,3 +230,5 @@ $("<meta>").attr({
 	"name" : "viewport",
 	"content" : "width=device-width, initial-scale=1.0"
 }).appendTo("head");
+// swap login
+$(".login-form-section.login").remove().insertBefore(".login-form-section.register");

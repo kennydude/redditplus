@@ -1,5 +1,5 @@
 .redditplus-button{
-	display: inline !important;
+	display: inline-block !important;
 	cursor: pointer;
 }
 .redditplus-button.fl{
@@ -7,7 +7,20 @@
 }
 .redditplus-image{
 	max-width: 100%;
+	cursor: zoom-in;
 	height: auto;
+}
+.hide{
+  display: none
+}
+.redditplus-abutton{
+	background: blue;
+	color: #FFF !important;
+	padding: 10px;
+	display: inline-block;
+}
+.redditplus-abutton:hover{
+	background: lightblue;
 }
 .redditplus-lightbox{
 	z-index: 100;
@@ -33,8 +46,32 @@
         display: none;
     }
     div#header-bottom-right{
-        position: static;
-        display: block;
+        position: static !important;
+        display: block !important;
+    }
+    .redditplus-button{
+    	padding: 6px;
+    }
+    .login-form-section {
+    	width: 100% !important;
+    }
+    .login-form-section.register .registration-info {
+    	position: fixed !important;
+    }
+    #sr-header-area {
+    	height: 35px !important;
+    	line-height: 35px !important;
+    }
+    .tabmenu li a, .content ul.flat-list a, .nextprev a, .user a.login-required{
+    	display: inline-block !important;
+    	padding: 10px !important;
+    }
+	.drop-choices a{
+		padding: 10px !important;
+	}
+    .tabmenu{
+    	overflow-x: scroll;
+		width: 100%;
     }
 }
 @media(max-width: 400px){
